@@ -29,6 +29,7 @@ type Client struct {
 	eventHandlers       *eventHandlers
 	customEventHandlers *customEventHandlers
 	cancel              context.CancelFunc
+	heartBeatCancel     context.CancelFunc // 用于控制心跳进程
 	done                <-chan struct{}
 	lock                sync.RWMutex
 }
@@ -72,7 +73,7 @@ func (c *Client) init() error {
 	roomInfo, err := api.GetRoomInfo(c.RoomID)
 	// 失败降级
 	if err != nil || roomInfo.Code != 0 {
-		log.Errorf("room=%s init GetRoomInfo fialed, %s", c.RoomID, err)
+		log.Errorf("room=%s init GetRoomInfo failed, %s", c.RoomID, err)
 	}
 	c.RoomID = roomInfo.Data.RoomId
 	if c.host == "" {
@@ -141,6 +142,7 @@ func (c *Client) heartBeatLoop() {
 	for {
 		select {
 		case <-c.done:
+			log.Debug("heartbeat loop stopped")
 			return
 		case <-time.After(30 * time.Second):
 			c.lock.Lock()
@@ -161,14 +163,27 @@ func (c *Client) Start() error {
 	if err := c.connect(); err != nil {
 		return err
 	}
+
+	// 使用新的 context 启动心跳和消息循环
+	_, cancel := context.WithCancel(context.Background())
+	c.cancel = cancel
+	c.heartBeatCancel = cancel // 在此保存取消的引用
+
 	go c.wsLoop()
-	go c.heartBeatLoop()
+	go c.heartBeatLoop() // 启动心跳进程
 	return nil
 }
 
 // Stop 停止弹幕 Client
 func (c *Client) Stop() {
-	c.cancel()
+	c.cancel() // 停止事件监听
+	if c.heartBeatCancel != nil {
+		c.heartBeatCancel() // 停止心跳
+	}
+	if c.conn != nil {
+		c.conn.Close() // 关闭 WebSocket 连接
+	}
+	log.Info("Client stopped")
 }
 
 func (c *Client) SetHost(host string) {

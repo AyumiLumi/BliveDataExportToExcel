@@ -66,7 +66,9 @@ type Gift struct {
 	SvgaBlock         int         `json:"svga_block"`
 	TagImage          string      `json:"tag_image"`
 	Tid               string      `json:"tid"`
-	Timestamp         int         `json:"timestamp"`
+	Timestamp         int64       `json:"timestamp"`
+	FansMedalLevel    int         `json:"fans_medal_level"`
+	FansMedalName     string      `json:"fans_medal_name"`
 	TopList           interface{} `json:"top_list"`
 	TotalCoin         int         `json:"total_coin"`
 	Uid               int         `json:"uid"`

@@ -19,6 +19,9 @@ type SuperChat struct {
 	BackgroundPriceColor  string  `json:"background_price_color"` //背景价格颜色
 	ColorPoint            float64 `json:"color_point"`
 	Dmscore               int     `json:"dmscore"`
+	Timestamp             int64   `json:"timestamp"`
+	FansMedalLevel        int     `json:"fans_medal_level"`
+	FansMedalName         string  `json:"fans_medal_name"`
 	EndTime               int     `json:"end_time"` //结束时间戳
 	Gift                  struct {
 		GiftId   int    `json:"gift_id"`   //礼物ID

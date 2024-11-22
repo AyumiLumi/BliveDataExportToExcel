@@ -7,15 +7,19 @@ import (
 )
 
 type GuardBuy struct {
-	Uid        int    `json:"uid"`
-	Username   string `json:"username"`
-	GuardLevel int    `json:"guard_level"`
-	Num        int    `json:"num"`
-	Price      int    `json:"price"`
-	GiftId     int    `json:"gift_id"`
-	GiftName   string `json:"gift_name"`
-	StartTime  int    `json:"start_time"`
-	EndTime    int    `json:"end_time"`
+	Uid            int    `json:"uid"`
+	Username       string `json:"username"`
+	GuardLevel     int    `json:"guard_level"`
+	Num            int    `json:"num"`
+	Price          int    `json:"price"`
+	GiftId         int    `json:"gift_id"`
+	GiftName       string `json:"gift_name"`
+	StartTime      int    `json:"start_time"`
+	EndTime        int    `json:"end_time"`
+	Timestamp      int64  `json:"timestamp"`
+	FansMedalLevel int    `json:"fans_medal_level"`
+	FansMedalName  string `json:"fans_medal_name"`
+	GuardUnit      string `json:"guard_unit"`
 }
 
 func (g *GuardBuy) Parse(data []byte) {
