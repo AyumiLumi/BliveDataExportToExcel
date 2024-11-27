@@ -6,7 +6,9 @@
 
 Go version go1.23.0 windows/amd64
 
-安装Fyne UI，Fyne 需要 3 个基本元素，Go 工具（至少为 1.12 版）、C 编译器（用于连接系统图形驱动程序）和系统图形驱动程序。
+安装Fyne UI，快速上手
+https://docs.fyne.io/started/
+Fyne 需要 3 个基本元素，Go 工具（至少为 1.12 版）、C 编译器（用于连接系统图形驱动程序）和系统图形驱动程序。
 
 ```
 $ go get fyne.io/fyne/v2@latest
