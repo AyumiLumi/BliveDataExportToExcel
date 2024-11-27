@@ -37,7 +37,7 @@ go get https://github.com/AyumiLumi/BliveDataExportToExcel
 
 输入主播房间号，输入你的Cookie，点击start按钮即可开始监听记录直播事件，点击取消或者关闭程序，会自动把程序运行期间的直播事件写入以时间+主播名为文件名的excel文件中，点击UI上的数据行，即可复制到系统粘贴板，直播事件做了如下图的分类
 
-![image-20241126155655012](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20241126155655012.png)
+https://github.com/AyumiLumi/BliveDataExportToExcel/blob/main/image-20241126155655012.png
 
 ## 代码示例
 
