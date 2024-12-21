@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Akegarasu/blivedm-go/api"
-	"github.com/Akegarasu/blivedm-go/packet"
+	"github.com/AyumiLumi/BliveDataExportToExcel/api"
+	"github.com/AyumiLumi/BliveDataExportToExcel/packet"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )

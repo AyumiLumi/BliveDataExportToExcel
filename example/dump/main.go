@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/Akegarasu/blivedm-go/client"
-	"github.com/Akegarasu/blivedm-go/message"
-	_ "github.com/Akegarasu/blivedm-go/utils"
+	"github.com/AyumiLumi/BliveDataExportToExcel/client"
+	"github.com/AyumiLumi/BliveDataExportToExcel/message"
+	_ "github.com/AyumiLumi/BliveDataExportToExcel/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/tealeg/xlsx"
 	_ "net/http/pprof"

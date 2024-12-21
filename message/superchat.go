@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/Akegarasu/blivedm-go/utils"
+	"github.com/AyumiLumi/BliveDataExportToExcel/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
@@ -51,7 +51,7 @@ type SuperChat struct {
 	MessageTrans     string `json:"message_trans"`
 	Price            int    `json:"price"` // 价格（人民币）
 	Rate             int    `json:"rate"`
-	StartTime        int    `json:"start_time"` // 开始时间戳
+	StartTime        int64  `json:"start_time"` // 开始时间戳
 	Time             int    `json:"time"`       //剩余时间
 	Token            string `json:"token"`
 	TransMark        int    `json:"trans_mark"`

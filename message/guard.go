@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/Akegarasu/blivedm-go/utils"
+	"github.com/AyumiLumi/BliveDataExportToExcel/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
@@ -14,7 +14,7 @@ type GuardBuy struct {
 	Price          int    `json:"price"`
 	GiftId         int    `json:"gift_id"`
 	GiftName       string `json:"gift_name"`
-	StartTime      int    `json:"start_time"`
+	StartTime      int64  `json:"start_time"`
 	EndTime        int    `json:"end_time"`
 	Timestamp      int64  `json:"timestamp"`
 	FansMedalLevel int    `json:"fans_medal_level"`

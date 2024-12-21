@@ -3,9 +3,9 @@ package export
 import (
 	"context"
 	"fmt"
-	"github.com/Akegarasu/blivedm-go/api"
-	"github.com/Akegarasu/blivedm-go/client"
-	"github.com/Akegarasu/blivedm-go/message"
+	"github.com/AyumiLumi/BliveDataExportToExcel/api"
+	"github.com/AyumiLumi/BliveDataExportToExcel/client"
+	"github.com/AyumiLumi/BliveDataExportToExcel/message"
 	log "github.com/sirupsen/logrus"
 	"github.com/tealeg/xlsx"
 	"os"
@@ -15,7 +15,7 @@ import (
 
 var savePath string
 
-func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan string, cancelChan chan struct{}) {
+func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[string]chan string, cancelChan chan struct{}) {
 	log.SetLevel(log.DebugLevel)
 	c := client.NewClient(roomId) //25977291
 	c.SetCookie(cookie)
@@ -35,7 +35,7 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan 
 	addHeaders(sheet1, []string{"Uname", "Uid", "GiftName", "Number", "gift.Num*gift.Price"})
 
 	// 向大航海工作表写入数据
-	addHeaders(sheet3, []string{"Uname", "FansMedalName&Level", "Time", "Uid", "GuardLevel", "Number", "Price"})
+	addHeaders(sheet3, []string{"Uname", "Time", "Uid", "GuardLevel", "Number", "Price"})
 
 	var UpName string
 	UpName = "lumi"
@@ -62,15 +62,16 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan 
 			}
 			var content string
 			if danmaku.Type == message.EmoticonDanmaku {
-				content = fmt.Sprintf("%s [弹幕表情] %s %s Lv%d：%s 表情URL： %s\n", formattedTime, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url)
+				content = fmt.Sprintf("%s Uid:%d [弹幕表情] %s %s Lv%d：%s 表情URL： %s\n", formattedTime, danmaku.Sender.Uid, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url)
 				cell.Value = content
 				fmt.Printf("%s [弹幕表情] %s %s Lv%d：%s 表情URL： %s\n", formattedTime, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url)
 			} else {
-				content = fmt.Sprintf("%s [弹幕] %s %s Lv%d：%s\n", formattedTime, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content)
+				content = fmt.Sprintf("%s Uid:%d [弹幕] %s %s Lv%d：%s\n", formattedTime, danmaku.Sender.Uid, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content)
 				cell.Value = content
 				fmt.Printf("%s [弹幕] %s %s Lv%d：%s\n", formattedTime, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content)
 			}
-			eventChan <- content // 发送到 UI
+			eventChans["danmaku"] <- content // 发送到 danmaku
+			eventChans["home"] <- content    // 发送到 home
 		})
 
 		// SC事件
@@ -80,13 +81,16 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan 
 				return
 			default:
 			}
-			content := fmt.Sprintf("[SC|%d元] %s: %s", superChat.Price, superChat.UserInfo.Uname, superChat.Message)
-			eventChan <- content // 发送到 UI
+			formattedTime := "  " + format(superChat.StartTime)
+			MadelInfo := " " + superChat.MedalInfo.MedalName + " Lv" + strconv.Itoa(superChat.MedalInfo.MedalLevel)
+			content := fmt.Sprintf("[SC|%d元] %s %s: %s，%s", superChat.Price, superChat.UserInfo.Uname, MadelInfo, superChat.Message, formattedTime)
+			eventChans["home"] <- content      // 发送到 UI
+			eventChans["superchat"] <- content // 发送到 UI
 			row := sheet2.AddRow()
 			row.AddCell().Value = strconv.Itoa(superChat.Price)
-			row.AddCell().Value = superChat.UserInfo.Uname + superChat.FansMedalName + " Lv" + strconv.Itoa(superChat.FansMedalLevel)
+			row.AddCell().Value = superChat.UserInfo.Uname + MadelInfo
 			row.AddCell().Value = strconv.Itoa(superChat.Uid)
-			row.AddCell().Value = superChat.Message + "  " + format(superChat.Timestamp)
+			row.AddCell().Value = superChat.Message + formattedTime
 			superChatAllCount += float64(superChat.Price)
 		})
 
@@ -98,10 +102,12 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan 
 			default:
 			}
 			if gift.CoinType == "gold" {
-				content := fmt.Sprintf("[礼物] %s 的 %s x%d，共 %.2f 元", gift.Uname, gift.GiftName, gift.Num, float64(gift.Num*gift.Price)/1000)
-				eventChan <- content // 发送到 UI
+				MedalInfo := " " + gift.MedalInfo.MedalName + " Lv" + strconv.Itoa(gift.MedalInfo.MedalLevel)
+				content := fmt.Sprintf("[礼物] %s %s 的 %s x%d，共 %.2f 元，%s", gift.Uname, MedalInfo, gift.GiftName, gift.Num, float64(gift.Num*gift.Price)/1000, format(gift.Timestamp))
+				eventChans["gift"] <- content // 发送到 UI
+				eventChans["home"] <- content // 发送到 UI
 				row := sheet1.AddRow()
-				row.AddCell().Value = gift.Uname + gift.FansMedalName + " Lv" + strconv.Itoa(gift.FansMedalLevel)
+				row.AddCell().Value = gift.Uname + MedalInfo
 				row.AddCell().Value = strconv.Itoa(gift.Uid)
 				row.AddCell().Value = gift.GiftName + "  " + format(gift.Timestamp)
 				row.AddCell().Value = strconv.Itoa(gift.Num)
@@ -117,16 +123,18 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan 
 				return
 			default:
 			}
-			content := fmt.Sprintf("[大航海] %s 开通了 %d 等级的大航海，共 %d 个，金额 %.2f 元", guardBuy.Username, guardBuy.GuardLevel, guardBuy.Num, float64(guardBuy.Price*guardBuy.Num)/1000)
-			eventChan <- content // 发送到 UI
+			content := fmt.Sprintf("[大航海] %s 开通了 %s ，共 %d 个，金额 %.2f 元，%s", guardBuy.Username, guardBuy.GiftName, guardBuy.Num, float64(guardBuy.Price*guardBuy.Num)/1000, format(guardBuy.StartTime))
+			eventChans["home"] <- content  // 发送到 UI
+			eventChans["guard"] <- content // 发送到 UI
 			row := sheet3.AddRow()
 			row.AddCell().Value = guardBuy.Username
-			row.AddCell().Value = guardBuy.FansMedalName + " Lv" + strconv.Itoa(guardBuy.FansMedalLevel)
-			row.AddCell().Value = format(guardBuy.Timestamp)
+			//row.AddCell().Value = guardBuy.MedalInfo.MedalName + " Lv" + strconv.Itoa(guardBuy.MedalInfo.MedalLevel)
+			row.AddCell().Value = format(guardBuy.StartTime)
 			row.AddCell().Value = strconv.Itoa(guardBuy.Uid)
-			row.AddCell().Value = strconv.Itoa(guardBuy.GuardLevel)
+			row.AddCell().Value = guardBuy.GiftName //strconv.Itoa(guardBuy.GuardLevel)
 			row.AddCell().Value = strconv.Itoa(guardBuy.Num) + guardBuy.GuardUnit
 			row.AddCell().Value = fmt.Sprintf("%.2f", float64(guardBuy.Price*guardBuy.Num)/1000)
+			//row.AddCell().Value = fmt.Sprintf("%+v", guardBuy)
 			guardAllCount += float64(guardBuy.Price * guardBuy.Num / 1000)
 		})
 
@@ -138,12 +146,13 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChan chan 
 		select {
 		case <-ctx.Done():
 			// 汇总数据
+			addHeaders(sheet6, []string{"数据仅仅是礼物原价信息，由于API没有折扣信息，仅供参考！"})
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("礼物总计：%.2f元", giftAllCount)
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("SC总计：%.2f元", superChatAllCount)
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("大航海总计：%.2f元", guardAllCount)
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("总计：%.2f元", giftAllCount+superChatAllCount+guardAllCount)
 			saveExcelFile(file, UpName)
-			eventChan <- "任务完成，文件保存成功！路径：" + savePath
+			eventChans["home"] <- "任务完成，文件保存成功！路径：" + savePath
 			cancelChan <- struct{}{}
 		}
 	}()
@@ -202,11 +211,12 @@ func sendDanmaku() error {
 }
 
 func format(timestamp int64) string {
-	if timestamp > 1e12 {
-		timestamp /= 1000 // 转换为秒
+	// 如果时间戳长度大于13位，可能是毫秒
+	if timestamp >= 1e12 && timestamp < 1e15 {
+		timestamp /= 1000
 	}
 
-	// 将时间戳转换为 Time 类型
+	// 转换为 Time 类型
 	t := time.Unix(timestamp, 0)
 
 	// 使用本地时间（系统默认时区）
