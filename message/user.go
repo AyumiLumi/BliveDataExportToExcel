@@ -8,6 +8,7 @@ type User struct {
 	MobileVerify bool
 	Medal        *Medal
 	GuardLevel   int
+	level        int
 }
 
 type Medal struct {
