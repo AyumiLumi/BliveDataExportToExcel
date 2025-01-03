@@ -3,7 +3,6 @@ package pages
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -54,10 +53,10 @@ func CreateHomePage(myWindow fyne.Window, eventChans map[string]chan string, can
 			messages = messages[:len(messages)-1]
 		}
 		messages = append([]string{msg}, messages...)
-		go func() {
-			time.Sleep(60 * time.Millisecond)
-			scrollContainer.ScrollToBottom()
-		}()
+		//go func() {
+		//	//time.Sleep(60 * time.Millisecond)
+		//	scrollContainer.ScrollToBottom()
+		//}()
 	}
 
 	// 控制按钮

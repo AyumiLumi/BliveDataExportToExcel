@@ -320,3 +320,64 @@ func main() {
 
 ```
 
+### B站大航海消息
+
+
+
+```
+{
+  "cmd": "USER_TOAST_MSG_V2",
+  "data": {
+    "sender_uinfo": {
+      "uid": 9123548,
+      "base": {
+        "name": "黑听的小耳朵",
+        "face": ""
+      }
+    },
+    "receiver_uinfo": {
+      "uid": 922573,
+      "base": {
+        "name": "黑泽诺亚NOIR",
+        "face": "https://i1.hdslb.com/bfs/face/bfb3f9c7cfdf347c9588c5f302cdd2bc096dd8fe.webp"
+      }
+    },
+    "guard_info": {
+      "guard_level": 3,
+      "role_name": "舰长",
+      "room_guard_count": 147,
+      "op_type": 1,
+      "start_time": 1735882838,
+      "end_time": 1735882838
+    },
+    "group_guard_info": null,
+    "pay_info": {
+      "payflow_id": "2501031340270412435486336",
+      "price": 138000,
+      "num": 1,
+      "unit": "月"
+    },
+    "gift_info": {
+      "gift_id": 10003
+    },
+    "effect_info": {
+      "effect_id": 397,
+      "room_effect_id": 590,
+      "face_effect_id": 44,
+      "room_gift_effect_id": 0,
+      "room_group_effect_id": 1337
+    },
+    "toast_msg": "\\u003c%黑听的小耳朵%\\u003e 在主播黑泽诺亚NOIR的直播间开通了舰长，今天是TA陪伴主播的第1天",
+    "option": {
+      "anchor_show": true,
+      "user_show": true,
+      "is_group": 0,
+      "is_show": 0,
+      "source": 0,
+      "svga_block": 0,
+      "color": "#00D1F1"
+    }
+  }
+};
+```
+

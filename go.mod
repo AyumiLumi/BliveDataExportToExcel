@@ -7,6 +7,7 @@ require (
 	github.com/andybalholm/brotli v1.1.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/sirupsen/logrus v1.9.3
+	github.com/tealeg/xlsx v1.0.5
 	github.com/tidwall/gjson v1.17.3
 	google.golang.org/protobuf v1.34.2
 )
@@ -34,7 +35,6 @@ require (
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
-	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/yuin/goldmark v1.7.1 // indirect

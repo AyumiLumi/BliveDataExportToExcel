@@ -35,7 +35,7 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 	addHeaders(sheet1, []string{"Uname", "Uid", "GiftName", "Number", "gift.Num*gift.Price"})
 
 	// 向大航海工作表写入数据
-	addHeaders(sheet3, []string{"Uname", "Time", "Uid", "GuardLevel", "Number", "Price"})
+	addHeaders(sheet3, []string{"Uname", "Time", "Uid", "GuardLevel", "Number", "Price", "Message"})
 
 	var UpName string
 	UpName = "lumi"
@@ -117,25 +117,45 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 		})
 
 		// 大航海事件
-		c.OnGuardBuy(func(guardBuy *message.GuardBuy) {
+		//c.OnGuardBuy(func(guardBuy *message.GuardBuy) {
+		//	select {
+		//	case <-ctx.Done():
+		//		return
+		//	default:
+		//	}
+		//	content := fmt.Sprintf("[大航海] %s 开通了 %s ，共 %d 个，金额 %.2f 元，%s", guardBuy.Username, guardBuy.GiftName, guardBuy.Num, float64(guardBuy.Price*guardBuy.Num)/1000, format(guardBuy.StartTime))
+		//	eventChans["home"] <- content  // 发送到 UI
+		//	eventChans["guard"] <- content // 发送到 UI
+		//	row := sheet3.AddRow()
+		//	row.AddCell().Value = guardBuy.Username
+		//	//row.AddCell().Value = guardBuy.MedalInfo.MedalName + " Lv" + strconv.Itoa(guardBuy.MedalInfo.MedalLevel)
+		//	row.AddCell().Value = format(guardBuy.StartTime)
+		//	row.AddCell().Value = strconv.Itoa(guardBuy.Uid)
+		//	row.AddCell().Value = guardBuy.GiftName //strconv.Itoa(guardBuy.GuardLevel)
+		//	row.AddCell().Value = strconv.Itoa(guardBuy.Num) + guardBuy.GuardUnit
+		//	row.AddCell().Value = fmt.Sprintf("%.2f", float64(guardBuy.Price*guardBuy.Num)/1000)
+		//	//row.AddCell().Value = fmt.Sprintf("%+v", guardBuy)
+		//	guardAllCount += float64(guardBuy.Price * guardBuy.Num / 1000)
+		//})
+
+		c.OnGuard(func(guard *message.Guard) {
 			select {
 			case <-ctx.Done():
 				return
 			default:
 			}
-			content := fmt.Sprintf("[大航海] %s 开通了 %s ，共 %d 个，金额 %.2f 元，%s", guardBuy.Username, guardBuy.GiftName, guardBuy.Num, float64(guardBuy.Price*guardBuy.Num)/1000, format(guardBuy.StartTime))
+			content := fmt.Sprintf("[大航海] %s  %s", guard.ToastMsg, format(guard.GuardInfo.StartTime))
 			eventChans["home"] <- content  // 发送到 UI
 			eventChans["guard"] <- content // 发送到 UI
 			row := sheet3.AddRow()
-			row.AddCell().Value = guardBuy.Username
-			//row.AddCell().Value = guardBuy.MedalInfo.MedalName + " Lv" + strconv.Itoa(guardBuy.MedalInfo.MedalLevel)
-			row.AddCell().Value = format(guardBuy.StartTime)
-			row.AddCell().Value = strconv.Itoa(guardBuy.Uid)
-			row.AddCell().Value = guardBuy.GiftName //strconv.Itoa(guardBuy.GuardLevel)
-			row.AddCell().Value = strconv.Itoa(guardBuy.Num) + guardBuy.GuardUnit
-			row.AddCell().Value = fmt.Sprintf("%.2f", float64(guardBuy.Price*guardBuy.Num)/1000)
-			//row.AddCell().Value = fmt.Sprintf("%+v", guardBuy)
-			guardAllCount += float64(guardBuy.Price * guardBuy.Num / 1000)
+			row.AddCell().Value = guard.SenderUinfo.Base.Name
+			row.AddCell().Value = format(guard.GuardInfo.StartTime)
+			row.AddCell().Value = strconv.Itoa(guard.SenderUinfo.Uid)
+			row.AddCell().Value = guard.GuardInfo.RoleName
+			row.AddCell().Value = strconv.Itoa(guard.PayInfo.Num) + "个" + guard.PayInfo.Unit
+			row.AddCell().Value = fmt.Sprintf("%.2f", float64(guard.PayInfo.Price*guard.PayInfo.Num)/1000)
+			row.AddCell().Value = fmt.Sprintf("%s", guard.ToastMsg)
+			guardAllCount += float64(guard.PayInfo.Price * guard.PayInfo.Num / 1000)
 		})
 
 		c.Start()

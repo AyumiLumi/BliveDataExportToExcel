@@ -4,7 +4,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"time"
 )
 
 // CreateEventPage creates a reusable layout for event pages.
@@ -40,10 +39,10 @@ func CreateEventPage(eventChan chan string, title string) *fyne.Container {
 			messages = messages[:len(messages)-1]
 		}
 		messages = append([]string{msg}, messages...)
-		go func() {
-			time.Sleep(60 * time.Millisecond)
-			scrollContainer.ScrollToBottom()
-		}()
+		//go func() {
+		//	//time.Sleep(60 * time.Millisecond)
+		//	scrollContainer.ScrollToBottom()
+		//}()
 	}
 
 	// 监听事件

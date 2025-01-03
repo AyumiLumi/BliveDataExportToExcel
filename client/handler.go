@@ -21,6 +21,7 @@ type eventHandlers struct {
 	superChatHandlers      []func(*message.SuperChat)
 	giftHandlers           []func(*message.Gift)
 	guardBuyHandlers       []func(*message.GuardBuy)
+	guardHandlers          []func(*message.Guard)
 	liveHandlers           []func(*message.Live)
 	userToastHandlers      []func(*message.UserToast)
 }
@@ -59,6 +60,11 @@ func (c *Client) OnGift(f func(gift *message.Gift)) {
 // OnGuardBuy 添加 开通大航海事件 的处理器
 func (c *Client) OnGuardBuy(f func(*message.GuardBuy)) {
 	c.eventHandlers.guardBuyHandlers = append(c.eventHandlers.guardBuyHandlers, f)
+}
+
+// OnGuard 添加 开通大航海事件 的处理器 最新API
+func (c *Client) OnGuard(f func(*message.Guard)) {
+	c.eventHandlers.guardHandlers = append(c.eventHandlers.guardHandlers, f)
 }
 
 // OnLive 添加 开播事件 的处理器
@@ -110,6 +116,12 @@ func (c *Client) Handle(p packet.Packet) {
 			g := new(message.GuardBuy)
 			g.Parse(p.Body)
 			for _, fn := range c.eventHandlers.guardBuyHandlers {
+				go cover(func() { fn(g) })
+			}
+		case "USER_TOAST_MSG_V2":
+			g := new(message.Guard)
+			g.Parse(p.Body)
+			for _, fn := range c.eventHandlers.guardHandlers {
 				go cover(func() { fn(g) })
 			}
 		case "LIVE":
