@@ -22,6 +22,7 @@ type eventHandlers struct {
 	giftHandlers           []func(*message.Gift)
 	guardBuyHandlers       []func(*message.GuardBuy)
 	guardHandlers          []func(*message.Guard)
+	redPocketHandlers      []func(*message.RedPocket)
 	liveHandlers           []func(*message.Live)
 	userToastHandlers      []func(*message.UserToast)
 }
@@ -65,6 +66,11 @@ func (c *Client) OnGuardBuy(f func(*message.GuardBuy)) {
 // OnGuard 添加 开通大航海事件 的处理器 最新API
 func (c *Client) OnGuard(f func(*message.Guard)) {
 	c.eventHandlers.guardHandlers = append(c.eventHandlers.guardHandlers, f)
+}
+
+// OnGuard 添加 开通大航海事件 的处理器 最新API
+func (c *Client) OnRedPocket(f func(*message.RedPocket)) {
+	c.eventHandlers.redPocketHandlers = append(c.eventHandlers.redPocketHandlers, f)
 }
 
 // OnLive 添加 开播事件 的处理器
@@ -122,6 +128,12 @@ func (c *Client) Handle(p packet.Packet) {
 			g := new(message.Guard)
 			g.Parse(p.Body)
 			for _, fn := range c.eventHandlers.guardHandlers {
+				go cover(func() { fn(g) })
+			}
+		case "POPULARITY_RED_POCKET_V2_NEW":
+			g := new(message.RedPocket)
+			g.Parse(p.Body)
+			for _, fn := range c.eventHandlers.redPocketHandlers {
 				go cover(func() { fn(g) })
 			}
 		case "LIVE":

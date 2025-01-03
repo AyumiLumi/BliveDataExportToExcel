@@ -26,6 +26,7 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 	sheet2, _ := file.AddSheet("SC")
 	sheet3, _ := file.AddSheet("大航海")
 	sheet4, _ := file.AddSheet("弹幕")
+	sheet5, _ := file.AddSheet("红包")
 	sheet6, _ := file.AddSheet("直播营收总计")
 
 	// 向醒目留言工作表写入数据
@@ -37,12 +38,16 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 	// 向大航海工作表写入数据
 	addHeaders(sheet3, []string{"Uname", "Time", "Uid", "GuardLevel", "Number", "Price", "Message"})
 
+	// 向红包工作表写入数据
+	addHeaders(sheet5, []string{"Uname", "Time", "Uid", "Number", "Price", "Message"})
+
 	var UpName string
 	UpName = "lumi"
 
 	superChatAllCount := 0.00
 	giftAllCount := 0.00
 	guardAllCount := 0.00
+	redPocketAllCount := 0.00
 
 	// 启动事件处理协程
 	go func() {
@@ -116,28 +121,6 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 			}
 		})
 
-		// 大航海事件
-		//c.OnGuardBuy(func(guardBuy *message.GuardBuy) {
-		//	select {
-		//	case <-ctx.Done():
-		//		return
-		//	default:
-		//	}
-		//	content := fmt.Sprintf("[大航海] %s 开通了 %s ，共 %d 个，金额 %.2f 元，%s", guardBuy.Username, guardBuy.GiftName, guardBuy.Num, float64(guardBuy.Price*guardBuy.Num)/1000, format(guardBuy.StartTime))
-		//	eventChans["home"] <- content  // 发送到 UI
-		//	eventChans["guard"] <- content // 发送到 UI
-		//	row := sheet3.AddRow()
-		//	row.AddCell().Value = guardBuy.Username
-		//	//row.AddCell().Value = guardBuy.MedalInfo.MedalName + " Lv" + strconv.Itoa(guardBuy.MedalInfo.MedalLevel)
-		//	row.AddCell().Value = format(guardBuy.StartTime)
-		//	row.AddCell().Value = strconv.Itoa(guardBuy.Uid)
-		//	row.AddCell().Value = guardBuy.GiftName //strconv.Itoa(guardBuy.GuardLevel)
-		//	row.AddCell().Value = strconv.Itoa(guardBuy.Num) + guardBuy.GuardUnit
-		//	row.AddCell().Value = fmt.Sprintf("%.2f", float64(guardBuy.Price*guardBuy.Num)/1000)
-		//	//row.AddCell().Value = fmt.Sprintf("%+v", guardBuy)
-		//	guardAllCount += float64(guardBuy.Price * guardBuy.Num / 1000)
-		//})
-
 		c.OnGuard(func(guard *message.Guard) {
 			select {
 			case <-ctx.Done():
@@ -153,9 +136,31 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 			row.AddCell().Value = strconv.Itoa(guard.SenderUinfo.Uid)
 			row.AddCell().Value = guard.GuardInfo.RoleName
 			row.AddCell().Value = strconv.Itoa(guard.PayInfo.Num) + "个" + guard.PayInfo.Unit
-			row.AddCell().Value = fmt.Sprintf("%.2f", float64(guard.PayInfo.Price*guard.PayInfo.Num)/1000)
+			row.AddCell().Value = fmt.Sprintf("%.2f", float64(guard.PayInfo.Price)/1000)
 			row.AddCell().Value = fmt.Sprintf("%s", guard.ToastMsg)
-			guardAllCount += float64(guard.PayInfo.Price * guard.PayInfo.Num / 1000)
+			guardAllCount += float64(guard.PayInfo.Price / 1000)
+		})
+
+		//红包事件
+		c.OnRedPocket(func(redPocket *message.RedPocket) {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+			content := fmt.Sprintf("[红包] %s  [Uid:%d]  %s  Lv%d  %s%s， 共%d个，%.2f元 %s", redPocket.Uname, redPocket.Uid, redPocket.SenderInfo.Medal.Name, redPocket.SenderInfo.Medal.Level,
+				redPocket.Action, redPocket.GiftName, redPocket.Num, float64(redPocket.Price/10), format(redPocket.StartTime))
+			eventChans["home"] <- content      // 发送到 UI
+			eventChans["redpocket"] <- content // 发送到 UI
+			row := sheet5.AddRow()
+			row.AddCell().Value = redPocket.Uname
+			row.AddCell().Value = format(redPocket.StartTime)
+			row.AddCell().Value = strconv.Itoa(redPocket.Uid)
+			//row.AddCell().Value = guard.GuardInfo.RoleName
+			row.AddCell().Value = strconv.Itoa(redPocket.Num) + "个"
+			row.AddCell().Value = fmt.Sprintf("%.2f", float64(redPocket.Price)/10)
+			row.AddCell().Value = fmt.Sprintf("%s", content)
+			redPocketAllCount += float64(redPocket.Price / 10)
 		})
 
 		c.Start()
@@ -169,8 +174,9 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 			addHeaders(sheet6, []string{"数据仅仅是礼物原价信息，由于API没有折扣信息，仅供参考！"})
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("礼物总计：%.2f元", giftAllCount)
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("SC总计：%.2f元", superChatAllCount)
+			sheet6.AddRow().AddCell().Value = fmt.Sprintf("红包总计：%.2f元", redPocketAllCount)
 			sheet6.AddRow().AddCell().Value = fmt.Sprintf("大航海总计：%.2f元", guardAllCount)
-			sheet6.AddRow().AddCell().Value = fmt.Sprintf("总计：%.2f元", giftAllCount+superChatAllCount+guardAllCount)
+			sheet6.AddRow().AddCell().Value = fmt.Sprintf("总计：%.2f元", giftAllCount+superChatAllCount+guardAllCount+redPocketAllCount)
 			saveExcelFile(file, UpName)
 			eventChans["home"] <- "任务完成，文件保存成功！路径：" + savePath
 			cancelChan <- struct{}{}

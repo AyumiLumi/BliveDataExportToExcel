@@ -18,6 +18,7 @@ func main() {
 		"danmaku":   make(chan string, 150),
 		"gift":      make(chan string, 200),
 		"superchat": make(chan string, 300),
+		"redpocket": make(chan string, 300),
 		"guard":     make(chan string, 100),
 	}
 
@@ -31,6 +32,7 @@ func main() {
 	giftPage := pages.CreateEventPage(eventChans["gift"], "礼物事件")
 	superChatPage := pages.CreateEventPage(eventChans["superchat"], "SC 事件")
 	guardPage := pages.CreateEventPage(eventChans["guard"], "大航海事件")
+	redPocketPage := pages.CreateEventPage(eventChans["redpocket"], "红包事件")
 
 	// 使用 Tabs 创建侧边栏
 	tabs := container.NewAppTabs(
@@ -38,6 +40,7 @@ func main() {
 		container.NewTabItem("弹幕", danmakuPage),
 		container.NewTabItem("礼物", giftPage),
 		container.NewTabItem("SC", superChatPage),
+		container.NewTabItem("红包", redPocketPage),
 		container.NewTabItem("大航海", guardPage),
 	)
 	tabs.SetTabLocation(container.TabLocationLeading)
