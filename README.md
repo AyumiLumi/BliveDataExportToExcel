@@ -381,3 +381,89 @@ func main() {
 };
 ```
 
+### B站红包数据格式
+
+```
+{
+  cmd: "POPULARITY_RED_POCKET_V2_NEW",
+  data: {
+    lot_id: 25239368,
+    start_time: 1735893924,
+    current_time: 1735893924,
+    wait_num: 0,
+    wait_num_v2: 0,
+    uname: "滨崎步的水钻麦克风",
+    uid: 189194391,
+    action: "送出",
+    num: 1,
+    gift_name: "红包",
+    gift_id: 13000,
+    price: 20,
+    name_color: "#00D1F1",
+    medal_info: {
+      target_id: 3493126803032322,
+      special: "",
+      icon_id: 0,
+      anchor_uname: "",
+      anchor_roomid: 0,
+      medal_level: 22,
+      medal_name: "确实卡",
+      medal_color: 1725515,
+      medal_color_start: 1725515,
+      medal_color_end: 5414290,
+      medal_color_border: 6809855,
+      is_lighted: 1,
+      guard_level: 3,
+    },
+    wealth_level: 35,
+    group_medal: null,
+    is_mystery: false,
+    sender_info: {
+      uid: 189194391,
+      base: {
+        name: "滨崎步的水钻麦克风",
+        face: "https://i0.hdslb.com/bfs/face/ce02d62eb1fa99f625ab7c41ae5b66a3c9743430.webp",
+        name_color: 0,
+        is_mystery: false,
+        origin_info: {
+          name: "滨崎步的水钻麦克风",
+          face: "https://i0.hdslb.com/bfs/face/ce02d62eb1fa99f625ab7c41ae5b66a3c9743430.webp",
+        },
+        official_info: { role: 0, title: "", desc: "", type: -1 },
+        name_color_str: "#00D1F1",
+      },
+      medal: {
+        name: "确实卡",
+        level: 22,
+        color_start: 1725515,
+        color_end: 5414290,
+        color_border: 6809855,
+        color: 1725515,
+        id: 0,
+        typ: 0,
+        is_light: 1,
+        ruid: 3493126803032322,
+        guard_level: 3,
+        score: 50002767,
+        guard_icon:
+          "https://i0.hdslb.com/bfs/live/143f5ec3003b4080d1b5f817a9efdca46d631945.png",
+        honor_icon: "",
+        v2_medal_color_start: "#43B3E3CC",
+        v2_medal_color_end: "#43B3E3CC",
+        v2_medal_color_border: "#5FC7F4FF",
+        v2_medal_color_text: "#FFFFFFFF",
+        v2_medal_color_level: "#00308C99",
+        user_receive_count: 0,
+      },
+      wealth: { level: 35, dm_icon_key: "" },
+      title: null,
+      guard: { level: 3, expired_str: "2025-01-03 23:59:59" },
+      uhead_frame: null,
+      guard_leader: null,
+    },
+    gift_icon: "",
+    rp_type: 0,
+  },
+};
+```
+
