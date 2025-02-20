@@ -56,7 +56,7 @@ func CreateEventPage(eventChan chan string, title string) *fyne.Container {
 	// 布局
 	content := container.NewVBox(
 		widget.NewLabel(title), // 页面标题
-		scrollContainer,
+		container.NewMax(scrollContainer),
 	)
 
 	return content
