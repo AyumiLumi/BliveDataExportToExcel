@@ -85,7 +85,7 @@ func (d *Danmaku) Parse(data []byte) {
 		Urank:        int(i2.Get("5").Int()),
 		MobileVerify: i2.Get("6").Bool(),
 		GuardLevel:   int(info.Get("7").Int()),
-		level:        int(info.Get("16.0").Int()), //荣耀等级
+		Level:        int(info.Get("16.0").Int()), //荣耀等级
 		Medal: &Medal{
 			Level:    int(i3.Get("0").Int()),
 			Name:     i3.Get("1").String(),

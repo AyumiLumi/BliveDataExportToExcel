@@ -67,12 +67,14 @@ func ExportExcel(ctx context.Context, roomId int, cookie string, eventChans map[
 			}
 			var content string
 			if danmaku.Type == message.EmoticonDanmaku {
-				content = fmt.Sprintf("%s Uid:%d [弹幕表情] %s %s Lv%d：%s 表情URL： %s\n", formattedTime, danmaku.Sender.Uid, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url)
-				cell.Value = content
+				content = fmt.Sprintf("%s [弹幕表情] <%d> %s %s Lv%d：%s 表情URL： %s  Uid:%d\n", formattedTime, danmaku.Sender.Level, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url, danmaku.Sender.Uid)
+				cell.Value = fmt.Sprintf("%s Uid:%d [弹幕表情] <%d> %s %s Lv%d：%s 表情URL： %s\n", formattedTime, danmaku.Sender.Uid, danmaku.Sender.Level, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url)
+
 				fmt.Printf("%s [弹幕表情] %s %s Lv%d：%s 表情URL： %s\n", formattedTime, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Emoticon.Url)
 			} else {
-				content = fmt.Sprintf("%s Uid:%d [弹幕] %s %s Lv%d：%s\n", formattedTime, danmaku.Sender.Uid, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content)
-				cell.Value = content
+				content = fmt.Sprintf("%s [弹幕] <%d> %s %s Lv%d：%s Uid:%d\n", formattedTime, danmaku.Sender.Level, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content, danmaku.Sender.Uid)
+				cell.Value = fmt.Sprintf("%s Uid:%d [弹幕] <%d> %s %s Lv%d：%s\n", formattedTime, danmaku.Sender.Uid, danmaku.Sender.Level, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content)
+
 				fmt.Printf("%s [弹幕] %s %s Lv%d：%s\n", formattedTime, danmaku.Sender.Uname, danmaku.Sender.Medal.Name, danmaku.Sender.Medal.Level, danmaku.Content)
 			}
 			eventChans["danmaku"] <- content // 发送到 danmaku
