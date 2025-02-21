@@ -44,8 +44,8 @@ func CreateHomePage(myWindow fyne.Window, eventChans map[string]chan string, can
 	}
 
 	// 自动滚动
-	scrollContainer := container.NewVScroll(messageList)
-	scrollContainer.SetMinSize(fyne.NewSize(400, 600))
+	//scrollContainer := container.NewVScroll(messageList)
+	//scrollContainer.SetMinSize(fyne.NewSize(400, 600))
 
 	// 消息追加函数
 	appendMessage := func(msg string) {
@@ -139,9 +139,13 @@ func CreateHomePage(myWindow fyne.Window, eventChans map[string]chan string, can
 		widget.NewLabel("登录 Cookie"),
 		cookieEntry,
 		statusLabel,
-		scrollContainer,
-		buttonsContainer,
-		copyrightContainer,
+	)
+	content = container.NewBorder(
+		content,
+		container.NewVBox(buttonsContainer, copyrightContainer),
+		nil,
+		nil,
+		messageList,
 	)
 
 	return content

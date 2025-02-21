@@ -30,8 +30,8 @@ func CreateEventPage(eventChan chan string, title string) *fyne.Container {
 	}
 
 	// 自动滚动
-	scrollContainer := container.NewVScroll(messageList)
-	scrollContainer.SetMinSize(fyne.NewSize(400, 600))
+	//scrollContainer := container.NewVScroll(messageList)
+	//scrollContainer.SetMinSize(fyne.NewSize(800, 800))
 
 	// 消息追加函数
 	appendMessage := func(msg string) {
@@ -54,9 +54,12 @@ func CreateEventPage(eventChan chan string, title string) *fyne.Container {
 	}()
 
 	// 布局
-	content := container.NewVBox(
+	content := container.NewBorder(
 		widget.NewLabel(title), // 页面标题
-		container.NewMax(scrollContainer),
+		nil,
+		nil,
+		nil,
+		messageList,
 	)
 
 	return content
